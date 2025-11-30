@@ -1,0 +1,6 @@
+// vscode
+.vscode
+
+// terraform build file
+*.lock.hcl
+.terraform
