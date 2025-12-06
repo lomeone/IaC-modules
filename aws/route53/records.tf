@@ -14,7 +14,7 @@ resource "aws_route53_record" "records" {
 resource "aws_route53_record" "aliases" {
   for_each = {
     for idx, record in var.aliases :
-    "${record.name}-${record.zone_id}" => record
+    "${record.name}-${record.zone_id}-${record.type}" => record
   }
   zone_id = aws_route53_zone.main.zone_id
 
