@@ -1,11 +1,13 @@
-variable "name" {
+variable "eks" {
   type = object({
-    eks = string
+    name    = string
+    version = optional(string, "1.35")
   })
+
   default = {
-    eks = "default"
+    name    = "default"
+    version = "1.35"
   }
-  description = "resource name"
 }
 
 variable "vpc" {
