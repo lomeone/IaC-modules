@@ -19,7 +19,7 @@ resource "aws_eks_cluster" "main" {
   }
 
   tags = {
-    "karpenter.sh/discovery" = "${var.name.eks}"
+    "karpenter.sh/discovery" = "${var.eks.name}"
   }
 
   depends_on = [
