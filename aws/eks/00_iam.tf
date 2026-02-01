@@ -67,6 +67,11 @@ resource "aws_iam_role_policy_attachment" "node_group_AmazonEC2ContainerRegistry
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "node_group_AmazonElasticContainerRegistryPublicReadOnly" {
+  role       = aws_iam_role.node_group.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+}
+
 resource "aws_iam_role" "karpenter" {
   name               = "KarpenterNodeRole-${aws_eks_cluster.main.name}"
   assume_role_policy = data.aws_iam_policy_document.node_group_role.json
@@ -85,6 +90,11 @@ resource "aws_iam_role_policy_attachment" "karpenter_AmazonEKS_CNI_Policy" {
 resource "aws_iam_role_policy_attachment" "karpenter_AmazonEC2ContainerRegistryReadOnly" {
   role       = aws_iam_role.karpenter.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "karpenter_AmazonElasticContainerRegistryPublicReadOnly" {
+  role       = aws_iam_role.karpenter.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
 }
 
 resource "aws_iam_role_policy_attachment" "karpenter_AmazonSSMManagedInstanceCore" {
