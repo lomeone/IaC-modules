@@ -1,13 +1,14 @@
 resource "aws_eks_cluster" "main" {
-  name     = var.name.eks
+  name    = var.eks.name
+  version = var.eks.version
+
   role_arn = aws_iam_role.eks.arn
+
   vpc_config {
     subnet_ids              = var.vpc.subnet_ids.control_plane
     endpoint_private_access = true
     endpoint_public_access  = true
   }
-
-  version = "1.33"
 
   kubernetes_network_config {
     service_ipv4_cidr = var.network.service_ipv4_cidr
