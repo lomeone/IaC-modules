@@ -1,12 +1,12 @@
 variable "eks" {
   type = object({
     name    = string
-    version = optional(string, "1.34")
+    version = optional(string, "1.35")
   })
 
   default = {
     name    = "default"
-    version = "1.34"
+    version = "1.35"
   }
 }
 
