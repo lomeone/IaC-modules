@@ -62,9 +62,9 @@ resource "aws_iam_role_policy_attachment" "node_group_AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
-resource "aws_iam_role_policy_attachment" "node_group_AmazonEC2ContainerRegistryReadOnly" {
+resource "aws_iam_role_policy_attachment" "node_group_AmazonEC2ContainerRegistryPullOnly" {
   role       = aws_iam_role.node_group.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
 }
 
 resource "aws_iam_role_policy_attachment" "node_group_AmazonElasticContainerRegistryPublicReadOnly" {
@@ -87,9 +87,9 @@ resource "aws_iam_role_policy_attachment" "karpenter_AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
-resource "aws_iam_role_policy_attachment" "karpenter_AmazonEC2ContainerRegistryReadOnly" {
+resource "aws_iam_role_policy_attachment" "karpenter_AmazonEC2ContainerRegistryPullOnly" {
   role       = aws_iam_role.karpenter.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
 }
 
 resource "aws_iam_role_policy_attachment" "karpenter_AmazonElasticContainerRegistryPublicReadOnly" {
@@ -301,6 +301,14 @@ data "aws_iam_policy_document" "karpenter_controller_policy" {
     sid       = "AllowInstanceProfileReadActions"
   }
 
+  statement {
+    actions = ["iam:ListInstanceProfiles"]
+    effect = "Allow"
+
+    resources = ["*"]
+    sid = "AllowUnscopedInstanceProfileListAction"
+  }
+
   // for Spot instance
   statement {
     actions = [
@@ -351,37 +359,6 @@ data "aws_iam_policy_document" "ebs_csi_driver_role" {
 resource "aws_iam_role_policy_attachment" "name" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.ebs_csi_driver.name
-}
-
-resource "aws_iam_policy" "ecr_pull" {
-  name   = "ECRPullPolicy"
-  policy = data.aws_iam_policy_document.ecr_pull_policy.json
-}
-
-data "aws_iam_policy_document" "ecr_pull_policy" {
-  statement {
-    actions = [
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchImportUpstreamImage",
-      "ecr:CreateRepository"
-    ]
-    effect = "Allow"
-
-    resources = ["*"]
-  }
-
-}
-
-resource "aws_iam_role_policy_attachment" "node_group_ECRPullPolicy" {
-  role       = aws_iam_role.node_group.name
-  policy_arn = aws_iam_policy.ecr_pull.arn
-}
-
-resource "aws_iam_role_policy_attachment" "karpenter_ECRPullPolicy" {
-  role       = aws_iam_role.karpenter.name
-  policy_arn = aws_iam_policy.ecr_pull.arn
 }
 
 resource "aws_iam_role" "event_bridge_send_sqs" {
