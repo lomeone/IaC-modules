@@ -361,37 +361,6 @@ resource "aws_iam_role_policy_attachment" "name" {
   role       = aws_iam_role.ebs_csi_driver.name
 }
 
-resource "aws_iam_policy" "ecr_pull" {
-  name   = "ECRPullPolicy"
-  policy = data.aws_iam_policy_document.ecr_pull_policy.json
-}
-
-data "aws_iam_policy_document" "ecr_pull_policy" {
-  statement {
-    actions = [
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchImportUpstreamImage",
-      "ecr:CreateRepository"
-    ]
-    effect = "Allow"
-
-    resources = ["*"]
-  }
-
-}
-
-resource "aws_iam_role_policy_attachment" "node_group_ECRPullPolicy" {
-  role       = aws_iam_role.node_group.name
-  policy_arn = aws_iam_policy.ecr_pull.arn
-}
-
-resource "aws_iam_role_policy_attachment" "karpenter_ECRPullPolicy" {
-  role       = aws_iam_role.karpenter.name
-  policy_arn = aws_iam_policy.ecr_pull.arn
-}
-
 resource "aws_iam_role" "event_bridge_send_sqs" {
   name               = "Karpenter-${aws_eks_cluster.main.name}-EventBridgeSendSQSRole"
   assume_role_policy = data.aws_iam_policy_document.event_bridge_send_sqs_role.json
