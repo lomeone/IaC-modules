@@ -301,6 +301,14 @@ data "aws_iam_policy_document" "karpenter_controller_policy" {
     sid       = "AllowInstanceProfileReadActions"
   }
 
+  statement {
+    actions = ["iam:ListInstanceProfiles"]
+    effect = "Allow"
+
+    resources = ["*"]
+    sid = "AllowUnscopedInstanceProfileListAction"
+  }
+
   // for Spot instance
   statement {
     actions = [
