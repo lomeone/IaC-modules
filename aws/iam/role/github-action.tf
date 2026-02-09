@@ -29,11 +29,6 @@ data "aws_iam_policy_document" "github_action_oidc_assume_role" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "github_action_ECRPullPolicy" {
-  role       = aws_iam_role.github_action.name
-  policy_arn = "arn:aws:iam::396428372646:policy/ECRPullPolicy"
-}
-
 resource "aws_iam_role_policy_attachment" "github_action_GithubActionECRPolicy" {
   role       = aws_iam_role.github_action.name
   policy_arn = aws_iam_policy.github_action_ECRPolicy.arn
