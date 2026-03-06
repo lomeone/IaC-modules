@@ -10,13 +10,3 @@ resource "aws_secretsmanager_secret" "main" {
   name        = "ecr-pullthroughcache/${var.secretsmanager_secret.name}"
   description = var.secretsmanager_secret.description
 }
-
-resource "aws_secretsmanager_secret_version" "main" {
-  count = var.secretsmanager_secret != null ? 1 : 0
-
-  secret_id = aws_secretsmanager_secret.main[0].id
-  secret_string = jsonencode({
-    username    = var.secretsmanager_secret.username
-    accessToken = var.secretsmanager_secret.accessToken
-  })
-}

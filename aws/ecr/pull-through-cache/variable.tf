@@ -8,8 +8,6 @@ variable "pull_through_cache_rule" {
 variable "secretsmanager_secret" {
   type = object({
     name        = string
-    username    = string
-    accessToken = string
     description = string
   })
 
