@@ -2,11 +2,14 @@ resource "helm_release" "aws_loadbalancer_controller" {
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.16.0"
+  version    = "3.1.0"
 
   namespace = "kube-system"
 
   values = [<<EOF
+image:
+  repository: 396428372646.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-public/eks/aws-load-balancer-controller
+
 autoscaling:
   enabled: true
 
