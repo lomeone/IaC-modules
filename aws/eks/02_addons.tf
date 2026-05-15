@@ -1,7 +1,12 @@
+data "aws_eks_addon_version" "vpc_cni" {
+  addon_name         = "vpc-cni"
+  kubernetes_version = aws_eks_cluster.main.version
+}
+
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "vpc-cni"
-  addon_version = "v1.21.1-eksbuild.8"
+  addon_version = data.aws_eks_addon_version.vpc_cni.addon_version
 
   configuration_values = jsonencode({
     env = {
@@ -11,10 +16,15 @@ resource "aws_eks_addon" "vpc_cni" {
   })
 }
 
+data "aws_eks_addon_version" "core_dns" {
+  addon_name         = "coredns"
+  kubernetes_version = aws_eks_cluster.main.version
+}
+
 resource "aws_eks_addon" "core_dns" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "coredns"
-  addon_version = "v1.14.2-eksbuild.4"
+  addon_version = data.aws_eks_addon_version.core_dns.addon_version
 }
 
 # resource "aws_eks_addon" "pod_identity_agent" {
@@ -23,23 +33,26 @@ resource "aws_eks_addon" "core_dns" {
 #   addon_version = "v1.3.7-eksbuild.2"
 # }
 
-resource "aws_eks_addon" "ebs_csi_driver" {
-  cluster_name             = aws_eks_cluster.main.name
-  addon_name               = "aws-ebs-csi-driver"
-  addon_version            = "v1.59.0-eksbuild.1"
-  service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+data "aws_eks_addon_version" "csi_snapshot_controller" {
+  addon_name         = "snapshot-controller"
+  kubernetes_version = aws_eks_cluster.main.version
 }
 
 resource "aws_eks_addon" "csi_snapshot_controller" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "snapshot-controller"
-  addon_version = "v8.5.0-eksbuild.4"
+  addon_version = data.aws_eks_addon_version.csi_snapshot_controller.addon_version
+}
+
+data "aws_eks_addon_version" "metrics_server" {
+  addon_name         = "metrics-server"
+  kubernetes_version = aws_eks_cluster.main.version
 }
 
 resource "aws_eks_addon" "metrics_server" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "metrics-server"
-  addon_version = "v0.8.1-eksbuild.6"
+  addon_version = data.aws_eks_addon_version.metrics_server.addon_version
 }
 
 # resource "aws_eks_addon" "kube_state_metrics" {
