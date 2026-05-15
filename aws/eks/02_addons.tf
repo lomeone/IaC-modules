@@ -6,7 +6,7 @@ data "aws_eks_addon_version" "vpc_cni" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "vpc-cni"
-  addon_version = data.aws_eks_addon_version.vpc_cni.version
+  addon_version = "v1.21.1-eksbuild.8"
 
   configuration_values = jsonencode({
     env = {
@@ -24,7 +24,7 @@ data "aws_eks_addon_version" "core_dns" {
 resource "aws_eks_addon" "core_dns" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "coredns"
-  addon_version = data.aws_eks_addon_version.core_dns.version
+  addon_version = "v1.14.2-eksbuild.4"
 }
 
 # resource "aws_eks_addon" "pod_identity_agent" {
