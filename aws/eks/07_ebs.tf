@@ -37,7 +37,7 @@ resource "kubernetes_manifest" "gp3_retain_storage_class" {
     kind       = "StorageClass"
 
     metadata = {
-      name = "gp3"
+      name = "gp3-retain"
     }
 
     provisioner = "ebs.csi.aws.com"
