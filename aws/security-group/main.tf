@@ -26,8 +26,8 @@ resource "aws_vpc_security_group_ingress_rule" "ip_v4" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol = each.value.protocol
-  from_port   = each.value.from_port
-  to_port     = each.value.to_port
+  from_port   = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port     = each.value.protocol == "-1" ? null : each.value.to_port
   cidr_ipv4   = each.value.cidr_block_v4
 }
 
@@ -37,8 +37,8 @@ resource "aws_vpc_security_group_ingress_rule" "ip_v6" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol = each.value.protocol
-  from_port   = each.value.from_port
-  to_port     = each.value.to_port
+  from_port   = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port     = each.value.protocol == "-1" ? null : each.value.to_port
   cidr_ipv6   = each.value.cidr_block_v6
 }
 
@@ -48,8 +48,8 @@ resource "aws_vpc_security_group_ingress_rule" "security_group" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol                  = each.value.protocol
-  from_port                    = each.value.from_port
-  to_port                      = each.value.to_port
+  from_port                    = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port                      = each.value.protocol == "-1" ? null : each.value.to_port
   referenced_security_group_id = each.value.security_group_id
 }
 
@@ -59,8 +59,8 @@ resource "aws_vpc_security_group_ingress_rule" "prefix_list" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol    = each.value.protocol
-  from_port      = each.value.from_port
-  to_port        = each.value.to_port
+  from_port      = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port        = each.value.protocol == "-1" ? null : each.value.to_port
   prefix_list_id = each.value.prefix_list_id
 }
 
@@ -70,8 +70,8 @@ resource "aws_vpc_security_group_ingress_rule" "self" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol                  = each.value.protocol
-  from_port                    = each.value.from_port
-  to_port                      = each.value.to_port
+  from_port                    = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port                      = each.value.protocol == "-1" ? null : each.value.to_port
   referenced_security_group_id = aws_security_group.this.id
 }
 
@@ -81,8 +81,8 @@ resource "aws_vpc_security_group_egress_rule" "ip_v4" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol = each.value.protocol
-  from_port   = each.value.from_port
-  to_port     = each.value.to_port
+  from_port   = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port     = each.value.protocol == "-1" ? null : each.value.to_port
   cidr_ipv4   = each.value.cidr_block_v4
 }
 
@@ -92,8 +92,8 @@ resource "aws_vpc_security_group_egress_rule" "ip_v6" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol = each.value.protocol
-  from_port   = each.value.from_port
-  to_port     = each.value.to_port
+  from_port   = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port     = each.value.protocol == "-1" ? null : each.value.to_port
   cidr_ipv6   = each.value.cidr_block_v6
 }
 
@@ -103,8 +103,8 @@ resource "aws_vpc_security_group_egress_rule" "security_group" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol                  = each.value.protocol
-  from_port                    = each.value.from_port
-  to_port                      = each.value.to_port
+  from_port                    = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port                      = each.value.protocol == "-1" ? null : each.value.to_port
   referenced_security_group_id = each.value.security_group_id
 }
 
@@ -114,8 +114,8 @@ resource "aws_vpc_security_group_egress_rule" "prefix_list" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol    = each.value.protocol
-  from_port      = each.value.from_port
-  to_port        = each.value.to_port
+  from_port      = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port        = each.value.protocol == "-1" ? null : each.value.to_port
   prefix_list_id = each.value.prefix_list_id
 }
 
@@ -125,7 +125,7 @@ resource "aws_vpc_security_group_egress_rule" "self" {
   security_group_id = aws_security_group.this.id
 
   ip_protocol                  = each.value.protocol
-  from_port                    = each.value.from_port
-  to_port                      = each.value.to_port
+  from_port                    = each.value.protocol == "-1" ? null : each.value.from_port
+  to_port                      = each.value.protocol == "-1" ? null : each.value.to_port
   referenced_security_group_id = aws_security_group.this.id
 }
