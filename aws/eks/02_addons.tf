@@ -6,7 +6,7 @@ data "aws_eks_addon_version" "vpc_cni" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "vpc-cni"
-  addon_version = data.aws_eks_addon_version.vpc_cni.addon_version
+  addon_version = data.aws_eks_addon_version.vpc_cni.version
 
   configuration_values = jsonencode({
     env = {
@@ -24,7 +24,7 @@ data "aws_eks_addon_version" "core_dns" {
 resource "aws_eks_addon" "core_dns" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "coredns"
-  addon_version = data.aws_eks_addon_version.core_dns.addon_version
+  addon_version = data.aws_eks_addon_version.core_dns.version
 }
 
 # resource "aws_eks_addon" "pod_identity_agent" {
@@ -41,7 +41,7 @@ data "aws_eks_addon_version" "csi_snapshot_controller" {
 resource "aws_eks_addon" "csi_snapshot_controller" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "snapshot-controller"
-  addon_version = data.aws_eks_addon_version.csi_snapshot_controller.addon_version
+  addon_version = data.aws_eks_addon_version.csi_snapshot_controller.version
 }
 
 data "aws_eks_addon_version" "metrics_server" {
@@ -52,7 +52,7 @@ data "aws_eks_addon_version" "metrics_server" {
 resource "aws_eks_addon" "metrics_server" {
   cluster_name  = aws_eks_cluster.main.name
   addon_name    = "metrics-server"
-  addon_version = data.aws_eks_addon_version.metrics_server.addon_version
+  addon_version = data.aws_eks_addon_version.metrics_server.version
 }
 
 # resource "aws_eks_addon" "kube_state_metrics" {
