@@ -1,7 +1,12 @@
+data "aws_eks_addon_version" "ebs_csi_driver" {
+  addon_name         = "aws-ebs-csi-driver"
+  kubernetes_version = aws_eks_cluster.main.version
+}
+
 resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.main.name
   addon_name               = "aws-ebs-csi-driver"
-  addon_version            = "v1.59.0-eksbuild.1"
+  addon_version            = data.aws_eks_addon_version.ebs_csi_driver.addon_version
   service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
 }
 
