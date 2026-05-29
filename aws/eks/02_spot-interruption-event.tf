@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "karpenter_interruption_queue" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [for rule in aws_cloudwatch_event_rule.karpenter_interruption : rule.arn]
+      values   = [for rule in aws_cloudwatch_event_rule.karpenter_node_autoscaling : rule.arn]
     }
   }
 
