@@ -1,31 +1,36 @@
 data "aws_iam_policy_document" "assume_role" {
-  for_each = var.roles
+  for_each = var.service_accounts
 
-  statement {
-    effect  = "Allow"
-    actions = each.value.trust_policy.actions
+  dynamic "statement" {
+    for_each = each.value.eks_bindings # key = eks_cluster key
+    content {
+      effect  = "Allow"
+      actions = ["sts:AssumeRoleWithWebIdentity"]
 
-    dynamic "principals" {
-      for_each = each.value.trust_policy.principals
-      content {
-        type        = principals.value.type
-        identifiers = principals.value.identifiers
+      principals {
+        type        = "Federated"
+        identifiers = [var.eks_clusters[statement.key].oidc_arn]
       }
-    }
 
-    dynamic "condition" {
-      for_each = each.value.trust_policy.conditions
-      content {
-        test     = condition.value.test
-        variable = condition.value.variable
-        values   = condition.value.values
+      condition {
+        test     = "StringEquals"
+        variable = "${replace(var.eks_clusters[statement.key].oidc_url, "https://", "")}:sub"
+        values = [
+          for b in statement.value : "system:serviceaccount:${b.namespace}:${b.service_account_name}"
+        ]
+      }
+
+      condition {
+        test     = "StringEquals"
+        variable = "${replace(var.eks_clusters[statement.key].oidc_url, "https://", "")}:aud"
+        values   = ["sts.amazonaws.com"]
       }
     }
   }
 }
 
 resource "aws_iam_role" "main" {
-  for_each = var.roles
+  for_each = var.service_accounts
 
   name                 = each.key
   description          = each.value.description
@@ -37,8 +42,8 @@ resource "aws_iam_role" "main" {
 resource "aws_iam_role_policy_attachment" "managed" {
   for_each = {
     for pair in flatten([
-      for role_name, role in var.roles : [
-        for arn in role.policy_arns : {
+      for role_name, sa in var.service_accounts : [
+        for arn in sa.policy_arns : {
           role_name  = role_name
           policy_arn = arn
         }
@@ -52,8 +57,8 @@ resource "aws_iam_role_policy_attachment" "managed" {
 
 data "aws_iam_policy_document" "inline" {
   for_each = {
-    for role_name, role in var.roles : role_name => role
-    if length(role.inline_policy_statements) > 0
+    for role_name, sa in var.service_accounts : role_name => sa
+    if length(sa.inline_policy_statements) > 0
   }
 
   dynamic "statement" {
@@ -78,8 +83,8 @@ data "aws_iam_policy_document" "inline" {
 
 resource "aws_iam_role_policy" "inline" {
   for_each = {
-    for role_name, role in var.roles : role_name => role
-    if length(role.inline_policy_statements) > 0
+    for role_name, sa in var.service_accounts : role_name => sa
+    if length(sa.inline_policy_statements) > 0
   }
 
   name   = "${each.key}-inline"
