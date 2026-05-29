@@ -26,12 +26,6 @@ resource "aws_iam_role_policy_attachment" "eks_AmazonEKSVPCResourceController" {
   role       = aws_iam_role.eks.name
 }
 
-resource "aws_iam_openid_connect_provider" "eks_oidc" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.eks_tls.certificates[0].sha1_fingerprint]
-  url             = data.tls_certificate.eks_tls.url
-}
-
 resource "aws_iam_role" "node_group" {
   name               = "AmazonEKSNodeRole-terraform"
   assume_role_policy = data.aws_iam_policy_document.node_group_role.json
@@ -303,10 +297,10 @@ data "aws_iam_policy_document" "karpenter_controller_policy" {
 
   statement {
     actions = ["iam:ListInstanceProfiles"]
-    effect = "Allow"
+    effect  = "Allow"
 
     resources = ["*"]
-    sid = "AllowUnscopedInstanceProfileListAction"
+    sid       = "AllowUnscopedInstanceProfileListAction"
   }
 
   // for Spot instance
