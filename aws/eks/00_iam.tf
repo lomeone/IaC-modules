@@ -394,7 +394,7 @@ data "aws_iam_policy_document" "event_bridge_send_sqs_policy" {
 
     actions = ["sqs:SendMessage"]
 
-    resources = [aws_sqs_queue.karpenter_spot.arn]
+    resources = [aws_sqs_queue.karpenter_interruption.arn]
   }
 }
 
