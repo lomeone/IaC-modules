@@ -1,3 +1,63 @@
+locals {
+  karpenter_interruption_rules = {
+    scheduled_change = {
+      description = "AWS Health scheduled change events"
+      event_pattern = {
+        source      = ["aws.health"]
+        detail-type = ["AWS Health Event"]
+      }
+    }
+
+    spot_interruption = {
+      description = "EC2 Spot interruption warnings"
+      event_pattern = {
+        source      = ["aws.ec2"]
+        detail-type = ["EC2 Spot Instance Interruption Warning"]
+      }
+    }
+
+    rebalance_recommendation = {
+      description = "EC2 Spot rebalance recommendations"
+      event_pattern = {
+        source      = ["aws.ec2"]
+        detail-type = ["EC2 Instance Rebalance Recommendation"]
+      }
+    }
+
+    instance_state_change = {
+      description = "EC2 instance state changes"
+      event_pattern = {
+        source      = ["aws.ec2"]
+        detail-type = ["EC2 Instance State-change Notification"]
+      }
+    }
+
+    capacity_reservation_interruption = {
+      description = "EC2 capacity reservation interruption warnings"
+      event_pattern = {
+        source      = ["aws.ec2"]
+        detail-type = ["EC2 Capacity Reservation Instance Interruption Warning"]
+      }
+    }
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "karpenter_interruption" {
+  for_each = local.karpenter_interruption_rules
+
+  name          = "Karpenter-${aws_eks_cluster.main.name}-${each.key}"
+  description   = each.value.description
+  event_pattern = jsonencode(each.value.event_pattern)
+}
+
+resource "aws_cloudwatch_event_target" "karpenter_interruption" {
+  for_each = aws_cloudwatch_event_rule.karpenter_interruption
+
+  rule      = each.value.name
+  target_id = "KarpenterInterruptionQueueTarget"
+  arn       = aws_sqs_queue.karpenter_interruption.arn
+}
+
 resource "aws_sqs_queue" "karpenter_interruption" {
   name = "Karpenter-${aws_eks_cluster.main.name}-SpotInterruptionQueue"
 
@@ -5,42 +65,6 @@ resource "aws_sqs_queue" "karpenter_interruption" {
   sqs_managed_sse_enabled   = true
 }
 
-resource "aws_cloudwatch_event_rule" "karpenter_node_autoscaling" {
-  name        = "Karpenter-${aws_eks_cluster.main.name}-NodeAutoscalingRule"
-  description = "This rule is used to route Instance notifications to EC2 Auto Scaling at Karpenter"
-  event_pattern = jsonencode({
-    "source" = [
-      "aws.ec2",
-      "aws.health"
-    ],
-    detail-type = [
-      "EC2 Instance Rebalance Recommendation",
-      "EC2 Spot Instance Interruption Warning",
-      "EC2 Instance State-change Notification",
-      "AWS Health Event"
-    ],
-    detail : {
-      state : [ # EC2 Instance State-change Notification 필터
-        "shutting-down",
-        "terminated",
-        "stopping",
-        "stopped"
-      ],
-      service : [ # AWS Health Event 필터 (서비스)
-        "EC2"
-      ],
-      eventTypeCategory : [ # AWS Health Event 필터 (유형)
-        "scheduledChange"
-      ]
-    }
-  })
-}
-
-resource "aws_cloudwatch_event_target" "node_autoscaling" {
-  rule     = aws_cloudwatch_event_rule.karpenter_node_autoscaling.name
-  arn      = aws_sqs_queue.karpenter_interruption.arn
-  role_arn = aws_iam_role.event_bridge_send_sqs.arn
-}
 
 data "aws_iam_policy_document" "karpenter_interruption_queue" {
   statement {
@@ -63,7 +87,7 @@ data "aws_iam_policy_document" "karpenter_interruption_queue" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [for rule in aws_cloudwatch_event_rule.karpenter_node_autoscaling : rule.arn]
+      values   = [for rule in aws_cloudwatch_event_rule.karpenter_interruption : rule.arn]
     }
   }
 
