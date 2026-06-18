@@ -42,7 +42,7 @@ resource "aws_eks_node_group" "default_node_group" {
   node_role_arn   = aws_iam_role.node_group.arn
   subnet_ids      = var.vpc.subnet_ids.node
   # release_version = nonsensitive(data.aws_ssm_parameter.eks_ami_release_version.value)
-  release_version = "1.35.4-20260423"
+  release_version = "1.36.1-20260610"
 
   scaling_config {
     desired_size = var.node_group.desired_size
