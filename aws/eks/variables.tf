@@ -6,7 +6,7 @@ variable "eks" {
 
   default = {
     name    = "default"
-    version = "1.35"
+    version = "1.36"
   }
 }
 
