@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.14.0"
 
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 5.0"
+      version = "~> 5.21.0"
     }
   }
 }
@@ -81,4 +81,10 @@ resource "cloudflare_dns_record" "main" {
   priority = each.value.priority
   comment  = each.value.comment
   tags     = each.value.tags
+
+  lifecycle {
+    ignore_changes = [
+      "modified_on",
+    ]
+  }
 }
