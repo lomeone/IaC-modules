@@ -81,10 +81,4 @@ resource "cloudflare_dns_record" "main" {
   priority = each.value.priority
   comment  = each.value.comment
   tags     = each.value.tags
-
-  lifecycle {
-    ignore_changes = [
-      "modified_on",
-    ]
-  }
 }
