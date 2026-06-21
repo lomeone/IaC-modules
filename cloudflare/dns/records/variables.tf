@@ -20,7 +20,7 @@ variable "records" {
     ttl      = optional(number, 1)
     proxied  = optional(bool, false)
     priority = optional(number, null)
-    comment  = optional(string, "")
+    comment  = optional(string, null)
     tags     = optional(list(string), [])
   }))
 
