@@ -12,6 +12,11 @@ resource "aws_eks_addon" "vpc_cni" {
     env = {
       AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG = "true"
       ENI_CONFIG_LABEL_DEF               = "topology.kubernetes.io/zone"
+
+      # Assign /28 prefixes (16 IPs) per ENI slot instead of single IPs to raise max pods per node.
+      # Only applies to ENIs created after enabling, so existing nodes must be rotated.
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
     }
   })
 }
